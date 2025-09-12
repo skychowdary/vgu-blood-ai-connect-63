@@ -1,0 +1,226 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* VGU Blood Finder AI Design System */
+
+@layer base {
+  :root {
+    /* VGU Brand Colors */
+    --color-primary: 10 52% 32%; /* #7B2B2B - Deep brown-red */
+    --color-primary-600: 10 52% 32%;
+    --color-primary-500: 10 45% 38%; /* #8E3434 */
+    --color-accent: 10 45% 44%; /* #A63C3C */
+    
+    /* Base Colors */
+    --color-bg: 0 0% 97.5%; /* #F9F9F9 */
+    --color-surface: 0 0% 100%; /* #FFFFFF */
+    --color-text: 0 0% 10%; /* #1A1A1A */
+    --color-text-invert: 0 0% 100%; /* #FFFFFF */
+    --color-success: 160 84% 39%; /* #059669 */
+    --color-danger: 0 74% 50%; /* #DC2626 */
+    --color-warning: 43 96% 56%; /* #F59E0B */
+    
+    /* Neutral Grays */
+    --color-gray-50: 0 0% 98%;
+    --color-gray-100: 0 0% 96%;
+    --color-gray-200: 0 0% 90%;
+    --color-gray-300: 0 0% 83%;
+    --color-gray-400: 0 0% 64%;
+    --color-gray-500: 0 0% 45%;
+    --color-gray-600: 0 0% 32%;
+    --color-gray-700: 0 0% 25%;
+    --color-gray-800: 0 0% 15%;
+    --color-gray-900: 0 0% 9%;
+
+    /* Shadcn Compatibility */
+    --background: var(--color-bg);
+    --foreground: var(--color-text);
+    --card: var(--color-surface);
+    --card-foreground: var(--color-text);
+    --popover: var(--color-surface);
+    --popover-foreground: var(--color-text);
+    --primary: var(--color-primary);
+    --primary-foreground: var(--color-text-invert);
+    --secondary: var(--color-gray-100);
+    --secondary-foreground: var(--color-text);
+    --muted: var(--color-gray-100);
+    --muted-foreground: var(--color-gray-500);
+    --accent: var(--color-accent);
+    --accent-foreground: var(--color-text-invert);
+    --destructive: var(--color-danger);
+    --destructive-foreground: var(--color-text-invert);
+    --border: var(--color-gray-200);
+    --input: var(--color-gray-200);
+    --ring: var(--color-primary);
+    --radius: 0.5rem;
+
+    /* Component Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    /* Transitions */
+    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+}
+
+@layer components {
+  /* VGU Component Styles */
+  .vgu-card {
+    @apply bg-surface border border-gray-200 rounded-lg shadow-sm p-3 sm:p-4 lg:p-6 transition-[var(--transition-smooth)];
+  }
+
+  .vgu-button-primary {
+    @apply bg-primary text-text-invert hover:bg-accent focus:bg-accent focus:ring-2 focus:ring-primary focus:ring-offset-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium transition-[var(--transition-smooth)] disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base;
+  }
+
+  .vgu-button-danger {
+    @apply bg-danger text-text-invert hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-danger focus:ring-offset-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium transition-[var(--transition-smooth)] text-sm sm:text-base;
+  }
+
+  .vgu-button-secondary {
+    @apply bg-gray-100 text-text hover:bg-gray-200 focus:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium transition-[var(--transition-smooth)] text-sm sm:text-base;
+  }
+
+  .vgu-input {
+    @apply w-full px-3 py-2.5 sm:py-3 text-sm sm:text-base border border-input rounded-lg bg-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-[var(--transition-smooth)] placeholder:text-gray-400;
+  }
+
+  .vgu-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .vgu-badge-success {
+    @apply vgu-badge bg-green-100 text-green-800;
+  }
+
+  .vgu-badge-warning {
+    @apply vgu-badge bg-yellow-100 text-yellow-800;
+  }
+
+  .vgu-badge-danger {
+    @apply vgu-badge bg-red-100 text-red-800;
+  }
+
+  .vgu-badge-primary {
+    @apply vgu-badge bg-primary/10 text-primary;
+  }
+
+  /* Chat Bubbles */
+  .chat-bubble-user {
+    @apply bg-primary text-text-invert rounded-2xl rounded-tr-sm px-3 sm:px-4 py-2.5 sm:py-3 max-w-[85%] sm:max-w-[80%] ml-auto text-sm sm:text-base;
+  }
+
+  .chat-bubble-ai {
+    @apply bg-surface text-text border border-gray-200 rounded-2xl rounded-tl-sm px-3 sm:px-4 py-2.5 sm:py-3 max-w-[85%] sm:max-w-[80%] mr-auto text-sm sm:text-base;
+  }
+
+  /* Loading States */
+  .skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+  }
+
+  /* Mobile Navigation */
+  @media (max-width: 768px) {
+    .mobile-nav-bottom {
+      @apply fixed bottom-0 left-0 right-0 bg-surface border-t border-gray-200 p-2 z-50;
+    }
+  }
+
+  /* Responsive Typography */
+  .responsive-text-xs { @apply text-xs sm:text-sm; }
+  .responsive-text-sm { @apply text-sm sm:text-base; }
+  .responsive-text-base { @apply text-base sm:text-lg; }
+  .responsive-text-lg { @apply text-lg sm:text-xl; }
+  .responsive-text-xl { @apply text-xl sm:text-2xl; }
+  .responsive-text-2xl { @apply text-2xl sm:text-3xl; }
+  .responsive-text-3xl { @apply text-3xl sm:text-4xl; }
+
+  /* Responsive Spacing */
+  .responsive-p-sm { @apply p-2 sm:p-3 lg:p-4; }
+  .responsive-p-md { @apply p-3 sm:p-4 lg:p-6; }
+  .responsive-p-lg { @apply p-4 sm:p-6 lg:p-8; }
+  .responsive-m-sm { @apply m-2 sm:m-3 lg:m-4; }
+  .responsive-m-md { @apply m-3 sm:m-4 lg:m-6; }
+  .responsive-m-lg { @apply m-4 sm:m-6 lg:m-8; }
+
+  /* Touch-friendly Interactive Elements */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  /* Mobile-first Flexbox Utilities */
+  .mobile-stack { @apply flex flex-col sm:flex-row; }
+  .mobile-stack-reverse { @apply flex flex-col-reverse sm:flex-row; }
+  .mobile-center { @apply flex flex-col items-center sm:flex-row sm:justify-between; }
+}
