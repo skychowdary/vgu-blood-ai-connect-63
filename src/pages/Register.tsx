@@ -77,25 +77,18 @@ const Register = () => {
             <p className="text-gray-600 mb-6">Welcome to the VGU Blood Finder community</p>
             
             <a
-              href={cfg.waCommunityLink}
+              href={cfg.tgJoinLink}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full vgu-button-primary inline-flex items-center justify-center mb-4"
             >
               <Heart size={16} className="mr-2" />
-              Join WhatsApp Community
+              Join Telegram Channel
             </a>
             
-            <p className="text-xs text-gray-500 mb-4">
-              Get notified about blood donation opportunities and community updates
+            <p className="text-sm text-gray-600 mb-4">
+              <span className="font-medium text-red-600">🚨 For Emergency Alerts:</span> Join our community to receive instant notifications about urgent blood donation requests and save lives!
             </p>
-            
-            <button
-              onClick={() => navigate('/login')}
-              className="w-full vgu-button-secondary"
-            >
-              Go to Login
-            </button>
           </div>
         </div>
       </div>
@@ -243,17 +236,6 @@ const Register = () => {
             </div>
           </form>
 
-          <div className="text-center mt-6 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-600">
-              Already registered?{' '}
-              <button
-                onClick={() => navigate('/login')}
-                className="text-primary hover:text-accent font-medium"
-              >
-                Login here
-              </button>
-            </p>
-          </div>
         </div>
       </div>
     </div>

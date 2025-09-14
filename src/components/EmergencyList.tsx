@@ -1,4 +1,4 @@
-import { Clock, MapPin, Phone, User, AlertTriangle } from 'lucide-react';
+import { Clock, MapPin, Phone, User, AlertTriangle, CheckCircle, RotateCcw } from 'lucide-react';
 import { type EmergencyRequest } from '@/lib/supabase';
 import { formatDistanceToNow, isPast } from 'date-fns';
 
@@ -6,9 +6,10 @@ interface EmergencyListProps {
   requests: EmergencyRequest[];
   loading?: boolean;
   compact?: boolean;
+  onStatusChange?: (requestId: string, newStatus: 'open' | 'closed') => void;
 }
 
-const EmergencyList = ({ requests, loading, compact = false }: EmergencyListProps) => {
+const EmergencyList = ({ requests, loading, compact = false, onStatusChange }: EmergencyListProps) => {
   const getTimeRemaining = (needBy?: string) => {
     if (!needBy) return null;
     
@@ -69,9 +70,37 @@ const EmergencyList = ({ requests, loading, compact = false }: EmergencyListProp
                 )}
               </div>
               
-              <span className="vgu-badge-primary text-xs">
-                {request.status}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className={`vgu-badge text-xs ${
+                  request.status === 'open' ? 'vgu-badge-danger' : 'vgu-badge-success'
+                }`}>
+                  {request.status}
+                </span>
+                
+                {onStatusChange && (
+                  <button
+                    onClick={() => onStatusChange(request.id, request.status === 'open' ? 'closed' : 'open')}
+                    className={`px-2 py-1 text-xs font-medium rounded-md transition-colors duration-200 touch-target ${
+                      request.status === 'open'
+                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                        : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                    }`}
+                    title={request.status === 'open' ? 'Mark as closed' : 'Reopen request'}
+                  >
+                    {request.status === 'open' ? (
+                      <div className="flex items-center gap-1">
+                        <CheckCircle size={12} />
+                        <span className="hidden sm:inline">Mark Closed</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        <RotateCcw size={12} />
+                        <span className="hidden sm:inline">Reopen</span>
+                      </div>
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
 
             {!compact && request.requester_name && (

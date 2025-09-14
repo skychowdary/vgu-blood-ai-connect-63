@@ -75,11 +75,18 @@ const Layout = () => {
                 <img
                   src={cfg.appLogo}
                   alt="VGU Logo"
-                  className="h-6 w-6 sm:h-8 sm:w-8 mr-2 sm:mr-3 flex-shrink-0"
+                  className="h-6 w-6 sm:h-8 sm:w-8 mr-2 sm:mr-3 flex-shrink-0 rounded-full"
                 />
-                <h1 className="text-sm sm:text-xl font-semibold text-gray-900 truncate">
-                  {cfg.appName}
-                </h1>
+                <div className="flex items-center min-w-0">
+                  <h1 className="text-sm sm:text-base lg:text-xl font-semibold text-gray-900 truncate">
+                    {cfg.appName}
+                  </h1>
+                  {/* Online status indicator - only show on larger screens */}
+                  <div className="hidden sm:flex items-center ml-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="ml-1 text-xs text-gray-500 hidden lg:inline">Online</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -208,7 +215,7 @@ const Layout = () => {
         )}
 
         {/* Main content */}
-        <main className="flex-1 min-h-screen lg:ml-0">
+        <main className="flex-1 lg:ml-0" style={{ height: 'calc(100vh - 56px)' }}>
           <div className="h-full overflow-x-hidden">
             <Outlet />
           </div>

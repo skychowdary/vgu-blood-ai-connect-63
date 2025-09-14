@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { AlertTriangle, Phone, MapPin, Calendar, User } from 'lucide-react';
 import { supabase, BLOOD_GROUPS } from '@/lib/supabase';
 import { useEmergencyRequests } from '@/lib/hooks';
-import { cfg, createEmergencyMessage } from '@/lib/config';
+import { cfg } from '@/lib/config';
+import { sendTelegramAlert } from '@/lib/telegram';
 import { useToast } from '@/hooks/use-toast';
 import EmergencyList from '@/components/EmergencyList';
 
@@ -23,6 +24,32 @@ const Emergency = () => {
   
   const [submitting, setSubmitting] = useState(false);
 
+  const handleStatusChange = async (requestId: string, newStatus: 'open' | 'closed') => {
+    try {
+      const { error } = await supabase
+        .from('emergency_requests')
+        .update({ status: newStatus })
+        .eq('id', requestId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Status updated",
+        description: `Request marked as ${newStatus}`,
+      });
+
+      // Refresh emergency list
+      refetch();
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast({
+        title: "Update failed",
+        description: "Failed to update request status",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -34,6 +61,7 @@ const Emergency = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+
 
     try {
       // Validate required fields
@@ -63,29 +91,39 @@ const Emergency = () => {
       };
 
       // Insert into database
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('emergency_requests')
-        .insert([emergencyData]);
+        .insert([emergencyData])
+        .select()
+        .single();
 
       if (error) throw error;
 
-      // Create WhatsApp message for coordinator
-      const message = createEmergencyMessage(
-        formData.blood_group,
-        formData.units_needed,
-        formData.hospital || 'Not specified',
-        formData.location || 'Not specified',
-        formData.contact_phone || 'Not provided'
-      );
-
-      // Open WhatsApp to coordinator
-      const whatsappUrl = `https://wa.me/${cfg.waCoordinator}?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, '_blank');
+      // Send Telegram alert
+      try {
+        await sendTelegramAlert({
+          blood_group: formData.blood_group,
+          units_needed: formData.units_needed,
+          hospital: formData.hospital || null,
+          location: formData.location || null,
+          contact_phone: formData.contact_phone || null,
+          need_by: formData.need_by || null,
+          requester_name: formData.requester_name || null,
+        });
+      } catch (telegramError) {
+        console.error('Telegram alert failed:', telegramError);
+        // Show warning but don't fail the entire request
+        toast({
+          title: "Telegram alert failed",
+          description: "Request saved but could not send Telegram notification. Check console for details.",
+          variant: "destructive",
+        });
+      }
 
       // Success feedback
       toast({
         title: "Emergency request submitted",
-        description: "Coordinator has been notified via WhatsApp",
+        description: "Alert sent to Telegram channel and added to system",
       });
 
       // Reset form
@@ -117,11 +155,11 @@ const Emergency = () => {
   return (
     <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto min-h-screen">
       {/* Page Header */}
-      <div className="mb-6 sm:mb-8">
+      <div className="mb-4 sm:mb-6 lg:mb-8">
         <div className="flex flex-col sm:flex-row sm:items-start mb-4">
-          <AlertTriangle size={28} className="text-red-600 mr-0 sm:mr-3 mb-2 sm:mb-0 flex-shrink-0" />
+          <AlertTriangle size={24} className="text-red-600 mr-0 sm:mr-3 mb-2 sm:mb-0 flex-shrink-0" />
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Emergency Blood Center</h1>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Emergency Blood Center</h1>
             <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">
               Submit urgent blood requests and manage emergency situations
             </p>
@@ -129,17 +167,17 @@ const Emergency = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
         {/* Emergency Request Form */}
         <div className="vgu-card">
-          <div className="flex items-center mb-6">
-            <AlertTriangle size={24} className="text-red-600 mr-3" />
-            <h2 className="text-xl font-semibold text-gray-900">
+          <div className="flex items-center mb-4 sm:mb-6">
+            <AlertTriangle size={20} className="text-red-600 mr-2 sm:mr-3" />
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
               Create Emergency Request
             </h2>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             {/* Requester Name */}
             <div>
               <label htmlFor="requester_name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -153,7 +191,7 @@ const Emergency = () => {
                   type="text"
                   value={formData.requester_name}
                   onChange={handleInputChange}
-                  className="vgu-input pl-10"
+                  className="vgu-input pl-10 text-sm sm:text-base"
                   placeholder="Your name or organization"
                   disabled={submitting}
                 />
@@ -161,7 +199,7 @@ const Emergency = () => {
             </div>
 
             {/* Blood Group & Units */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <label htmlFor="blood_group" className="block text-sm font-medium text-gray-700 mb-1">
                   Blood Group *
@@ -171,7 +209,7 @@ const Emergency = () => {
                   name="blood_group"
                   value={formData.blood_group}
                   onChange={handleInputChange}
-                  className="vgu-input"
+                  className="vgu-input text-sm sm:text-base"
                   required
                   disabled={submitting}
                 >
@@ -196,7 +234,7 @@ const Emergency = () => {
                   max="10"
                   value={formData.units_needed}
                   onChange={handleInputChange}
-                  className="vgu-input"
+                  className="vgu-input text-sm sm:text-base"
                   disabled={submitting}
                 />
               </div>
@@ -215,7 +253,7 @@ const Emergency = () => {
                   type="text"
                   value={formData.hospital}
                   onChange={handleInputChange}
-                  className="vgu-input pl-10"
+                  className="vgu-input pl-10 text-sm sm:text-base"
                   placeholder="Hospital name"
                   disabled={submitting}
                 />
@@ -233,7 +271,7 @@ const Emergency = () => {
                 type="text"
                 value={formData.location}
                 onChange={handleInputChange}
-                className="vgu-input"
+                  className="vgu-input text-sm sm:text-base"
                 placeholder="City, area, or detailed address"
                 disabled={submitting}
               />
@@ -252,7 +290,7 @@ const Emergency = () => {
                   type="tel"
                   value={formData.contact_phone}
                   onChange={handleInputChange}
-                  className="vgu-input pl-10"
+                  className="vgu-input pl-10 text-sm sm:text-base"
                   placeholder="WhatsApp number (e.g., 9876543210)"
                   disabled={submitting}
                 />
@@ -275,53 +313,56 @@ const Emergency = () => {
                   type="datetime-local"
                   value={formData.need_by}
                   onChange={handleInputChange}
-                  className="vgu-input pl-10"
+                  className="vgu-input pl-10 text-sm sm:text-base"
                   disabled={submitting}
                 />
               </div>
             </div>
 
             {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full vgu-button-danger"
-            >
-              {submitting ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Submitting Emergency Request...
-                </div>
-              ) : (
-                <>
-                  <AlertTriangle size={16} className="mr-2" />
-                  Submit Emergency Request
-                </>
-              )}
-            </button>
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full vgu-button-danger text-sm sm:text-base py-3 sm:py-4 font-semibold touch-target"
+              >
+                {submitting ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white mr-2"></div>
+                    <span className="text-sm sm:text-base">Submitting Emergency Request...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center">
+                    <AlertTriangle size={16} className="mr-2" />
+                    <span>Submit Emergency Request</span>
+                  </div>
+                )}
+              </button>
 
-            <p className="text-xs text-gray-500 text-center">
-              This will notify the coordinator via WhatsApp and add the request to our system
-            </p>
+              <p className="text-xs text-gray-500 text-center mt-2 px-2">
+                This will send an alert to the Telegram channel and add the request to our system
+              </p>
+            </div>
           </form>
         </div>
 
         {/* Active Emergency Requests */}
         <div className="vgu-card">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
               Active Emergency Requests
             </h2>
-            <span className="vgu-badge-danger">
-              {emergencyRequests.length} Open
+            <span className="vgu-badge-danger text-xs sm:text-sm">
+              {emergencyRequests.filter(r => r.status === 'open').length} Open
             </span>
           </div>
 
-          <EmergencyList 
-            requests={emergencyRequests}
-            loading={emergencyLoading}
-            compact={false}
-          />
+           <EmergencyList 
+             requests={emergencyRequests}
+             loading={emergencyLoading}
+             compact={false}
+             onStatusChange={handleStatusChange}
+           />
         </div>
       </div>
     </div>

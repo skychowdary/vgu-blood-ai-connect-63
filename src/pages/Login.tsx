@@ -168,18 +168,6 @@ const Login = () => {
             </button>
           </form>
 
-          {/* Register Link */}
-          <div className="text-center mt-6 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-600">
-              New donor?{' '}
-              <button
-                onClick={() => navigate('/register')}
-                className="text-primary hover:text-accent font-medium"
-              >
-                Register here
-              </button>
-            </p>
-          </div>
         </div>
       </div>
     </div>

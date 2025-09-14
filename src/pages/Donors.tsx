@@ -323,65 +323,7 @@ const Donors = () => {
           </table>
         </div>
 
-      {/* Donors Cards - Mobile/Tablet */}
-      <div className="lg:hidden space-y-3">
-        {loading ? (
-          [...Array(10)].map((_, i) => (
-            <div key={i} className="vgu-card">
-              <div className="animate-pulse space-y-2">
-                <div className="h-5 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-              </div>
-            </div>
-          ))
-        ) : filteredDonors.length === 0 ? (
-          <div className="vgu-card text-center py-12 text-gray-500">
-            <div className="text-4xl mb-2">🔍</div>
-            <p>No donors found</p>
-            <p className="text-sm mt-1">
-              Try adjusting your filters or search term
-            </p>
-          </div>
-        ) : (
-          filteredDonors.map((donor) => (
-            <div key={donor.id} className="vgu-card">
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {donor.full_name}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    {donor.role} • {donor.branch}
-                    {donor.class_year && ` • Year ${donor.class_year}`}
-                  </p>
-                </div>
-                <span className={`vgu-badge ${
-                  donor.availability ? 'vgu-badge-success' : 'vgu-badge-warning'
-                }`}>
-                  {donor.availability ? 'Available' : 'Unavailable'}
-                </span>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <span className="vgu-badge-primary">
-                  {donor.blood_group}
-                </span>
-                
-                <button
-                  onClick={() => handleWhatsAppContact(donor)}
-                  className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100"
-                >
-                  <MessageCircle size={14} className="mr-1" />
-                  Contact
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-        {/* Pagination */}
+        {/* Desktop Pagination */}
         {totalPages > 1 && (
           <div className="px-3 sm:px-4 xl:px-6 py-3 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
             <div className="text-xs sm:text-sm text-gray-700 text-center sm:text-left">
@@ -413,33 +355,104 @@ const Donors = () => {
         )}
       </div>
 
+      {/* Donors Cards - Mobile/Tablet */}
+      <div className="lg:hidden space-y-3 sm:space-y-4">
+        {loading ? (
+          [...Array(10)].map((_, i) => (
+            <div key={i} className="vgu-card animate-pulse">
+              <div className="space-y-3">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-2 flex-1">
+                    <div className="h-5 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                  <div className="h-6 bg-gray-200 rounded w-16"></div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="h-6 bg-gray-200 rounded w-12"></div>
+                  <div className="h-8 bg-gray-200 rounded w-20"></div>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : filteredDonors.length === 0 ? (
+          <div className="vgu-card text-center py-12 text-gray-500">
+            <div className="text-4xl mb-2">🔍</div>
+            <p className="text-lg font-medium">No donors found</p>
+            <p className="text-sm mt-1">
+              Try adjusting your filters or search term
+            </p>
+          </div>
+        ) : (
+          filteredDonors.map((donor) => (
+            <div key={donor.id} className="vgu-card hover:shadow-md transition-shadow duration-200">
+              <div className="flex justify-between items-start mb-3 sm:mb-4">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900 truncate">
+                    {donor.full_name}
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {donor.role} • {donor.branch}
+                    {donor.class_year && ` • Year ${donor.class_year}`}
+                  </p>
+                </div>
+                <span className={`vgu-badge ml-2 flex-shrink-0 ${
+                  donor.availability ? 'vgu-badge-success' : 'vgu-badge-warning'
+                }`}>
+                  {donor.availability ? 'Available' : 'Unavailable'}
+                </span>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <span className="vgu-badge-primary text-sm">
+                  {donor.blood_group}
+                </span>
+                
+                <button
+                  onClick={() => handleWhatsAppContact(donor)}
+                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200 touch-target"
+                >
+                  <MessageCircle size={16} className="mr-1" />
+                  <span className="hidden sm:inline">Contact</span>
+                  <span className="sm:hidden">Chat</span>
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
       {/* Pagination for Mobile Cards */}
       {totalPages > 1 && (
-        <div className="lg:hidden mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 px-3 sm:px-4">
-          <div className="text-xs sm:text-sm text-gray-700 text-center sm:text-left">
-            Showing {page * 25 + 1} to {Math.min((page + 1) * 25, count)} of {count} results
-          </div>
-          
-          <div className="flex justify-center sm:justify-end space-x-2">
-            <button
-              onClick={() => setPage(page - 1)}
-              disabled={page === 0}
-              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Previous
-            </button>
-            
-            <span className="px-3 py-1.5 text-sm bg-primary text-white rounded-lg">
-              {page + 1}
-            </span>
-            
-            <button
-              onClick={() => setPage(page + 1)}
-              disabled={page >= totalPages - 1}
-              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
+        <div className="lg:hidden mt-4 sm:mt-6">
+          <div className="vgu-card">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+              <div className="text-xs sm:text-sm text-gray-700 text-center sm:text-left">
+                Showing {page * 25 + 1} to {Math.min((page + 1) * 25, count)} of {count} results
+              </div>
+              
+              <div className="flex justify-center sm:justify-end space-x-2">
+                <button
+                  onClick={() => setPage(page - 1)}
+                  disabled={page === 0}
+                  className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed touch-target transition-colors duration-200"
+                >
+                  Previous
+                </button>
+                
+                <span className="px-4 py-2 text-sm bg-primary text-white rounded-lg font-medium">
+                  {page + 1}
+                </span>
+                
+                <button
+                  onClick={() => setPage(page + 1)}
+                  disabled={page >= totalPages - 1}
+                  className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed touch-target transition-colors duration-200"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
