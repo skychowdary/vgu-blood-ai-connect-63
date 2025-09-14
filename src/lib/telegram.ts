@@ -22,8 +22,15 @@ export async function testTelegramConnection(): Promise<{ success: boolean; erro
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      return { success: false, error: `Server API error: ${response.status} - ${errorData.error}` };
+      let errorMessage = `Server API error: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorMessage += ` - ${errorData.error}`;
+      } catch {
+        // If JSON parsing fails, use the status text
+        errorMessage += ` - ${response.statusText}`;
+      }
+      return { success: false, error: errorMessage };
     }
 
     const result = await response.json();
@@ -46,8 +53,15 @@ export async function sendTelegramAlert(req: TelegramEmergencyRequest): Promise<
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Server API error: ${response.status} - ${errorData.error}`);
+      let errorMessage = `Server API error: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorMessage += ` - ${errorData.error}`;
+      } catch {
+        // If JSON parsing fails, use the status text
+        errorMessage += ` - ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
     }
 
     const result = await response.json();
